@@ -1,0 +1,23 @@
+---
+version: '3'
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    links:
+      - influx
+    environment:
+      - JAVA_OPTS=-Dserver.port=8080 -Dmanagement.metrics.export.influx.uri=http://influx:8086 -Dmanagement.metrics.export.influx.user-name=user -Dmanagement.metrics.export.influx.password=password -Dmanagement.metrics.export.influx.db=metrics
+  influx:
+    image: "influxdb:1.5"
+    environment:
+      - INFLUXDB_DB=metrics
+      - INFLUXDB_USER=user
+      - INFLUXDB_USER_PASSWORD=password
+  grafana:
+    image: "grafana/grafana"
+    ports:
+      - "3000:3000"
+    links:
+      - influx
